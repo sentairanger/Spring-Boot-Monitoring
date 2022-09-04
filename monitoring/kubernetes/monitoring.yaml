@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /actuator/prometheus
+    prometheus.io/port: springport
+  labels:
+    name: spring-monitoring
+    release: prometheus
+  name: spring-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-monitoring
+  template:
+    metadata:
+      labels:
+        app: spring-monitoring
+    spec:
+      containers:
+      - name: spring-monitoring
+        image: linuxrobotgeek/spring-monitoring:latest
+        imagePullPolicy: Always
+        ports:
+        - name: springport
+          containerPort: 8080
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-monitoring
+  labels:
+    app: spring-monitoring
+spec:
+  selector:
+    app: spring-monitoring
+  ports:
+    - name: spring-monitoring
+      protocol: TCP
+      port: 8080
+      targetPort: springport
+  type: LoadBalancer
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: spring-monitoring
+  namespace: monitoring
+  labels:
+    app: spring-monitoring
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: spring-monitoring
+  endpoints:
+  - port: spring-monitoring
+    path: /actuator/prometheus
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - default
