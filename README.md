@@ -41,7 +41,7 @@ Once the application is running make sure prometheus can see it. I have provided
 
 Once prometheus is scraping the application you can mess around with the application and then access Grafana with the command `kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring`. Then go to `<vagrant-ip>:3000` or `localhost:3000`. Then you login with admin and the default password prom-operator. Change this for security reasons. Next, you can import the dashboard provided in the Grafana directory and the dashboard should appear.
 
-![grafana]()
+![grafana](https://github.com/sentairanger/Spring-Boot-Monitoring/blob/main/monitoring/images/dashboard.png)
 
 ### Vagrant box
 
